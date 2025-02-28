@@ -1,10 +1,15 @@
+const express = require('express')
+const app = express()
 let { people } = require('../data')
 
-const getPeople = (req, res) => {
-  res.status(200).json({ success: true, data: people })
-}
+// Middleware to parse JSON body
+app.use(express.json())
 
-const createPerson = (req, res) => {
+app.get("/",(req, res) => {
+  res.status(200).json({ success: true, data: people })
+})
+
+app.post("/welcome",(req, res) => {
   const { name } = req.body
   if (!name) {
     return res
@@ -12,19 +17,19 @@ const createPerson = (req, res) => {
       .json({ success: false, msg: 'please provide name value' })
   }
   res.status(201).send({ success: true, person: name })
-}
+})
 
-const createPersonPostman = (req, res) => {
-  const { name } = req.body
-  if (!name) {
-    return res
-      .status(400)
-      .json({ success: false, msg: 'please provide name value' })
-  }
-  res.status(201).send({ success: true, data: [...people, name] })
-}
+// app.post("/post",(req, res) => {
+//   const { name } = req.body
+//   if (!name) {
+//     return res
+//       .status(400)
+//       .json({ success: false, msg: 'please provide name value' })
+//   }
+//   res.status(201).send({ success: true, data: [...people, name] })
+// })
 
-const updatePerson = (req, res) => {
+app.put("/:id",(req, res) => {
   const { id } = req.params
   const { name } = req.body
 
@@ -42,9 +47,9 @@ const updatePerson = (req, res) => {
     return person
   })
   res.status(200).json({ success: true, data: newPeople })
-}
+})
 
-const deletePerson = (req, res) => {
+app.delete("/:id",(req, res) => {
   const person = people.find((person) => person.id === Number(req.params.id))
   if (!person) {
     return res
@@ -55,12 +60,16 @@ const deletePerson = (req, res) => {
     (person) => person.id !== Number(req.params.id)
   )
   return res.status(200).json({ success: true, data: newPeople })
-}
+})
 
-module.exports = {
-  getPeople,
-  createPerson,
-  createPersonPostman,
-  updatePerson,
-  deletePerson,
-}
+// module.exports = {
+//   getPeople,
+//   createPerson,
+//   createPersonPostman,
+//   updatePerson,
+//   deletePerson,
+// }
+
+app.listen(5000, () => {
+  console.log('Server is listening on port 5000')
+})

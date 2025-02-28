@@ -1,13 +1,13 @@
 const express = require('express')
-const router = express.Router()
+const app = express()
+const peopleRouter = require('./routes/people') // Import your router file
 
-router.post('/', (req, res) => {
-  const { name } = req.body
-  if (name) {
-    return res.status(200).send(`Welcome ${name}`)
-  }
+// Middleware to parse JSON body
+app.use(express.json())
 
-  res.status(401).send('Please Provide Credentials')
+// Use the router at `/api/people`
+app.use('/api/people', peopleRouter)
+
+app.listen(5000, () => {
+  console.log('Server is listening on port 5000')
 })
-
-module.exports = router
